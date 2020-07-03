@@ -2,15 +2,16 @@
 
 Here there be lions and tigers and beware of msbuild monsters.
 
-Included here are various examples of custom MSBuild tasks. I created each of these in an attempt to get realtime output
-during a custom build process for my [Verilog Language Extension](https://marketplace.visualstudio.com/items?itemName=gojimmypi.gojimmypi-verilog-language-extension),
+Included here are various examples of custom MSBuild tasks. I created each of these in an attempt to get 
+[realtime output during a custom build process](https://github.com/gojimmypi/VerilogLanguageExtension/pull/25#issuecomment-640259595) 
+for my [Verilog Language Extension](https://marketplace.visualstudio.com/items?itemName=gojimmypi.gojimmypi-verilog-language-extension),
 Running everything and burping out the results at the end is typically not desirable on a long running process such as FPGA syntesis.
 
 All projects are assumed to be compiled in `Debug` configuration.
 
 See `Debug - Options - Projects and Solutions - Build and Run` for output verbosity settings:
 
-![msbuild_output_verbosity](~/images/msbuild_output_verbosity.png)
+![msbuild_output_verbosity](./images/msbuild_output_verbosity.png)
 
 ## Realtime Console Output
 
