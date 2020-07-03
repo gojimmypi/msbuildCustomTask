@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug' ">
+    <OutputPath>bin\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>AsyncTask</RootNamespace>
+    <ProjectGuid>{A81468A3-1349-4B32-8ED5-3D06DB6BFACD}</ProjectGuid>
+  </PropertyGroup>
+  <UsingTask TaskName="ExecProcess" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+      <!--The file path is the full path to the executable file to run-->
+      <FilePath ParameterType="System.String" Required="true" />
+      <!--The arguments should contain all the command line arguments that need to be sent to the application-->
+      <Arguments ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Fragment" Language="cs"><![CDATA[
+  // string name = System.IO.Path.GetFileNameWithoutExtension(FilePath);
+  Log.LogMessage("Starting {0}...");      
+  //BuildInParallel = true;  
+  Log.LogMessage("Arguments="+Arguments);
+  System.Diagnostics.ProcessStartInfo processStartInfo = new System.Diagnostics.ProcessStartInfo("ping.exe", Arguments);
+  processStartInfo.UseShellExecute = true;
+  System.Diagnostics.Process.Start(processStartInfo);
+  Log.LogMessage("Finished running process {0}.");
+  ]]></Code>
+    </Task>
+  </UsingTask>
+  <Target Name="Build">
+    <ExecProcess FilePath="." Arguments="-n 5 192.168.1.1" />
+  </Target>
+  <Target Name="Rebuild" DependsOnTargets="Clean;Build">
+  </Target>
+  <Target Name="Clean">
+  </Target>
+</Project>

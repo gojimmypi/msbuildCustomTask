@@ -1,0 +1,310 @@
+﻿<Project Sdk="Microsoft.NET.Sdk" DefaultTargets="NoTarget" InitialTargets="InitFPGA">
+  <!--
+  For tips on editing this file, see https://docs.microsoft.com/en-us/visualstudio/msbuild/target-build-order?view=vs-2019
+
+  see: https://docs.microsoft.com/en-us/visualstudio/msbuild/how-to-extend-the-visual-studio-build-process?view=vs-2019
+  "Be sure to use different names than the predefined targets listed in the table in the previous section 
+  (for example, we named the custom build target here CustomAfterBuild, not AfterBuild), since those predefined 
+  targets are overridden by the SDK import which also defines them. You don't see the import of the target file 
+  that overrides those targets, but it is implicitly added to the end of the project file when you use the Sdk 
+  attribute method of referencing an SDK."
+-->
+  <ItemGroup>
+    <None Include="myCustomCommand.ps1" />
+    <None Include="myCustomCommand.bat" />
+    <None Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  
+  <!-- 
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>  
+  -->
+
+
+
+
+  <PropertyGroup>
+    <TargetFramework>net46</TargetFramework>
+    <RootNamespace>VerilogLanguage</RootNamespace>
+    <Platforms>ULX3S ECP5-12K;ULX3S ECP5-45K;ULX3S ECP5-85K;iCEBreaker</Platforms>
+    <Configurations>Debug;Release;Upload;Verify</Configurations>
+  </PropertyGroup>
+
+  <!-- 
+  <Import Project="Custom.Before.Microsoft.Common.Targets"></Import>
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+
+<PropertyGroup>
+<Platforms>ECP5-12K;iCE40</Platforms>
+</PropertyGroup>
+ -->
+  <PropertyGroup Condition=" '$(Platform)' == 'ULX3S ECP5-12K' ">
+    <DefineConstants>ULX3S ECP5-12K</DefineConstants>
+    <PlatformTarget>ECP5-12K</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'ULX3S ECP5-45K' ">
+    <DefineConstants>ULX3S ECP5-45K</DefineConstants>
+    <PlatformTarget>ECP5-45K</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'ULX3S ECP5-85K' ">
+    <DefineConstants>ULX3S ECP5-85K</DefineConstants>
+    <PlatformTarget>ECP5-85K</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'iCEBreaker' ">
+    <DefineConstants>iCEBreaker</DefineConstants>
+    <PlatformTarget>iCE40</PlatformTarget>
+  </PropertyGroup>
+  <!-- 
+<PropertyGroup>
+   <PlatformTarget>iCE40;ULX3S</PlatformTarget>
+   <PlatformTarget>ECP5-12K</PlatformTarget>
+</PropertyGroup>
+<PropertyGroup>
+   <Platform>iCE40;ULX3S</Platform>
+   <Platform>ECP5-12K</Platform>
+</PropertyGroup>
+ -->
+  <!-- when manually editing this list, delete all items from solution 
+  
+  GlobalSection(SolutionConfigurationPlatforms) = preSolution
+    and
+  GlobalSection(ProjectConfigurationPlatforms) = postSolution
+
+  for configuration manager items to be automatically renerated for the solution -->
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release' ">
+    <OutputPath>bin\</OutputPath>
+    <MyPublishDirectory>bin\</MyPublishDirectory>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug' ">
+    <OutputPath>bin\</OutputPath>
+    <MyPublishDirectory>bin\</MyPublishDirectory>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Upload' ">
+    <OutputPath>bin\</OutputPath>
+    <MyPublishDirectory>bin\</MyPublishDirectory>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Verify' ">
+    <OutputPath>bin\</OutputPath>
+    <MyPublishDirectory>bin\</MyPublishDirectory>
+  </PropertyGroup>
+  
+  <Target Name="CreateDirectories">
+    <Message Text="Running CreateDirectories ... $(TargetDir)" />
+    <Message Text="Running CreateDirectories ... $(BaseOutputPath)" />
+    <Message Text="Running CreateDirectories ... $(OutputDirectory)" />
+    <MakeDir Directories="$(OutputDirectory)" />
+    <MakeDir Directories="$(OutDir)app.publish\Application Files" />
+    <MakeDir Directories="$(TargetDir)app.publish\Application Files" />
+  </Target>
+  
+  <PropertyGroup>
+    <RootNamespace>msbuildOutputLogger</RootNamespace>
+    <ProjectGuid>{ABB344AE-1B12-45C6-B99C-4EC327E125FD}</ProjectGuid>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <InstallBuildDependenciesCmd>.\build\vs-prog.bat</InstallBuildDependenciesCmd>
+    <PipelineDependsOn>
+      InstallBuildDependencies;
+    </PipelineDependsOn>
+  </PropertyGroup>
+  <!--Launch a Process in Parallel
+  https://stackoverflow.com/questions/2387456/msbuild-exec-task-without-blocking
+  -->
+
+  <Target Name="NoTarget">
+    <Message Text="No target specified" />
+  </Target>
+
+  
+  <Target Name="Upload">
+    <Message Text="Doing UPLOAD for $(Platform)" />
+  </Target>
+  <!-- 
+
+%windir%\Sysnative\wsl.exe make ulx3s.bit
+c:\windows\system32\wsl.exe yosys Verilog.ys 
+C:\workspace\ulx3s-examples\bin\ujprog.exe
+
+-->
+  <Target Name="PublishOnly" DependsOnTargets="CreateDirectories">
+    <Message Text="Publishing Verilog Files - NOT IMPLEMENTED" />
+  </Target>
+  
+  <Target Name="CustomRebuild" DependsOnTargets="Clean;Build">
+  </Target>
+  
+  <Target Name="CustomClean">
+    <Message Text="Cleaning Verilog Files" />
+    <RemoveDir Directories="$(OutputPath)" />
+  </Target>
+  
+  <!--
+  To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  -->
+  <Target Name="AfterBuild">
+    <Message Text="AfterBuild running..." />
+    <!--
+    <ExecAsync FilePath="$(InstallBuildDependenciesCmd)" Arguments="iCEBreaker Makefile-iCEBreaker.mk 4">
+    </ExecAsync>
+    -->
+  </Target>
+  
+  
+  <PropertyGroup>
+    <!-- 
+      POST BUILD often does not run, runs only batch file code, can be overriden; use AfterTargets="Build" instead!      
+      see https://stackoverflow.com/questions/42389018/msbuild-post-build-events-not-running-in-windows-10 
+    -->
+    <PostBuildEvent>
+        echo PostBuildEvent!
+    </PostBuildEvent>
+  </PropertyGroup>
+  
+  
+  <PropertyGroup>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+    <ApplicationIcon />
+    <OutputType>Exe</OutputType>
+    <StartupObject />
+  </PropertyGroup>
+
+  <Target Name="Upload_ULX3S_12K" AfterTargets="Build" Condition=" '$(Configuration)|$(Platform)'=='Upload|ULX3S ECP5-12K' ">
+    <Message Text="MyPostBuild running...$(Configuration)|$(Platform)" />
+    <Exec Command="echo after build" />
+  </Target>
+  
+  <Target Name="Upload_ULX3S_45K" AfterTargets="Build" Condition=" '$(Configuration)|$(Platform)'=='Upload|ULX3S ECP5-45K' ">
+    <Message Text="MyPostBuild running...$(Configuration)|$(Platform)" />
+    <Exec Command="echo after build" />
+  </Target>
+  
+  <Target Name="Upload_ULX3S_85K" AfterTargets="CoreCompile" Condition=" '$(Configuration)|$(Platform)'=='Debug|ULX3S ECP5-85K' ">
+    <Exec Command="ping 192.168.1.1" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+      <Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
+    </Exec>
+
+  </Target>
+
+  <Target Name="Upload_iCEBreaker" AfterTargets="CoreBuild" DependsOnTargets="Build_iCEBreaker" Condition=" '$(Configuration)|$(Platform)'=='Upload|iCEBreaker' ">
+    <Message Text="Upload_iCEBreaker 194 running...$(Configuration)|$(Platform)" />
+    <Message Text="echo ." />
+    <Exec Command="echo Upload iCEBreaker!!" />
+    <Message Text="echo ." />
+  </Target>
+
+  <Target Name="Upload_iCEBreakerC" DependsOnTargets="Build_iCEBreaker" Condition=" '$(Configuration)|$(Platform)'=='Upload|iCEBreaker' ">
+    <Message Text="Conditional Upload_iCEBreaker 201 running...$(Configuration)|$(Platform)" />
+    <Message Text="echo ." />
+    <Exec Command="echo Upload iCEBreaker!!" />
+    <Message Text="echo ." />
+  </Target>
+
+
+  <Target Name="LogStuffInRealTime" BeforeTargets="CoreCompile">
+    <Exec Command="ping 127.0.0.1 -n 6" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+      <Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
+    </Exec>
+  </Target>
+
+  <Target Name="Build_iCEBreaker" BeforeTargets="CoreCompile">
+    <Exec Command="echo Build iCEBreaker! 209" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+      <Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
+    </Exec>
+    <Message Text="" />
+    <Message Text="Upload iCEBreaker! 223!" />
+    <Message Text="Platform=$(Platform)" />
+  </Target>
+
+
+  <!-- we cannot override CoreCompile
+  <Target Name="CoreCompile" DependsOnTargets="InitFPGA;SwitchToAnyCpu">
+    <Message Text="Running CoreCompile ... $(TargetDir)" />
+  </Target>
+  <Target Name="CoreClean">
+    <Message Text="Running CoreClean ... $(OutputPath)" />
+    <Delete Files="$(OutputPath)$(AssemblyName).exe" />
+  </Target>
+
+  <Target Name="CoreClean">
+    <Message Text="Running CoreClean ... $(OutputPath)" />
+    <Delete Files="$(OutputPath)$(AssemblyName).exe" />
+  </Target>
+
+-->
+
+  <!-- For the main C# compile, we need to switch platform -->
+  <Target Name="SwitchToAnyCpu" BeforeTargets="CoreCompile" AfterTargets="Build_iCEBreaker">
+    <Message Text="Platform=$(Platform)" />
+    <Message Text="PlatformTarget=$(PlatformName)" />
+    <PropertyGroup>
+      <MyStartupPlatform>$(Platform)</MyStartupPlatform>
+      <MyStartupPlatformTarget>$(PlatformTarget)</MyStartupPlatformTarget>
+      <MyStartupPlatform>$(Platform)</MyStartupPlatform>
+      <MyStartupPlatformTarget>$(PlatformTarget)</MyStartupPlatformTarget>
+      <Platform>anycpu</Platform>
+      <PlatformTarget>anycpu</PlatformTarget>
+    </PropertyGroup>
+    <Message Text="Platform=$(Platform)" />
+    <Message Text="PlatformTarget=$(PlatformTarget)" />
+  </Target>
+
+  <!-- after the core compile, switch back to the seleted FPGA -->
+  <Target Name="SwitchToMyStartupPlatform" AfterTargets="CoreCompile">
+    <Message Text="Running SwitchToMyStartupPlatform..." />
+    <PropertyGroup>
+      <Platform>$(MyStartupPlatform)</Platform>
+      <PlatformTarget>$(MyStartupPlatformTarget)</PlatformTarget>
+    </PropertyGroup>
+    <Message Text="Platform=$(Platform)" />
+    <Message Text="PlatformTarget=$(PlatformTarget)" />
+  </Target>
+
+    
+  <!-- after the core compile, switch back to the seleted FPGA -->
+  <Target Name="SwitchToMyStartupPlatform" AfterTargets="CoreCompile">
+    <Message Text="Running SwitchToMyStartupPlatform.." />
+    <PropertyGroup>
+      <Platform>$(MyStartupPlatform)</Platform>
+      <PlatformTarget>$(MyStartupPlatformTarget)</PlatformTarget>
+    </PropertyGroup>
+    <Message Text="Platform=$(Platform)" />
+    <Message Text="PlatformTarget=$(PlatformTarget)" />
+  </Target>
+
+  <Target Name="InitFPGA">
+    <Message Text="Running InitFPGA ... '$(Configuration)|$(Platform)' " />
+    <Message Text="VCTargetsPath = $(VCTargetsPath)">  </Message>
+    <!-- Any generic, all-board, all build initialization will go here-->
+  </Target>
+
+</Project>

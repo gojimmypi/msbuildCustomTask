@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug' ">
+    <OutputPath>bin\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>ExternalTask</RootNamespace>
+    <ProjectGuid>{1AD953C1-AA27-4591-836E-C6CE12254A6A}</ProjectGuid>
+  </PropertyGroup>
+  <UsingTask TaskName="ExternalTask" AssemblyFile=".\ExternalTaskLibrary\bin\Debug\ExternalTask.dll" Condition=" '$(Configuration)' == 'Debug' ">
+  </UsingTask>
+  <UsingTask TaskName="ExternalTask" AssemblyFile=".\ExternalTaskLibrary\bin\Release\ExternalTask.dll" Condition=" '$(Configuration)' == 'Release' ">
+  </UsingTask>
+
+  <Target Name="Build">
+    <ExternalTask WaitDuration="10000" />
+  </Target>
+  <Target Name="Rebuild" DependsOnTargets="Clean;Build">
+  </Target>
+  <Target Name="Clean">
+  </Target>
+</Project>

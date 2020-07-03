@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug' ">
+    <OutputPath>bin\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>AsyncTask</RootNamespace>
+    <ProjectGuid>{7D6AECDE-12E6-4851-9397-BAEFD5376086}</ProjectGuid>
+  </PropertyGroup>
+  <UsingTask TaskName="ExecProcess" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+      <!--The file path is the full path to the executable file to run-->
+      <FilePath ParameterType="System.String" Required="true" />
+      <!--The arguments should contain all the command line arguments that need to be sent to the application-->
+      <Arguments ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Fragment" Language="cs"><![CDATA[
+  // https://stackoverflow.com/questions/2387456/msbuild-exec-task-without-blocking      
+
+      System.Diagnostics.Trace.Listeners.Add(new System.Diagnostics.TextWriterTraceListener(Console.Out));
+      System.Diagnostics.Trace.AutoFlush = true;
+      System.Diagnostics.Trace.Indent();
+      System.Diagnostics.Trace.WriteLine("Trace Start!");
+      Log.LogMessage("0");
+     //Console.WriteLine("Hello World");
+    using (System.Diagnostics.Process compiler = new System.Diagnostics.Process())
+{
+    compiler.StartInfo.FileName = "ping.exe";
+    compiler.StartInfo.Arguments = Arguments;
+
+    string eOut = null;    
+    compiler.StartInfo.UseShellExecute = false;
+    compiler.StartInfo.CreateNoWindow = false;
+    // compiler.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+    compiler.ErrorDataReceived += new System.Diagnostics.DataReceivedEventHandler((sender, e) => 
+                                 { eOut += e.Data; });
+
+    // compiler.SynchronizingObject =  (System.ComponentModel.ISynchronizeInvoke)this;
+    if (compiler.SynchronizingObject == null) {
+       Log.LogMessage("compiler.SynchronizingObject is null!");
+    }
+
+    compiler.StartInfo.RedirectStandardOutput = true;
+    compiler.StartInfo.RedirectStandardError = true;
+
+    compiler.Start();
+
+    compiler.BeginOutputReadLine();
+    compiler.BeginErrorReadLine();
+    
+              System.Diagnostics.Trace.WriteLine("Trace message!");
+              System.Diagnostics.Debug.WriteLine("Debug message!");
+
+        compiler.OutputDataReceived += new System.Diagnostics.DataReceivedEventHandler ((sender, e) =>
+        {
+            if (!String.IsNullOrEmpty(e.Data))
+            {
+              System.Diagnostics.Trace.WriteLine("Trace message: " + e.Data);
+              System.Diagnostics.Debug.WriteLine("Debug message: " + e.Data);
+
+              Log.LogMessage(MessageImportance.Low,"Console message!");
+                Log.LogMessage(e.Data);
+            }
+        });    
+
+    // ConsoleOutput = "this is my output";
+    compiler.WaitForExit();
+    Log.LogMessage("3");
+    return true; // return success or failure
+}
+
+  ]]></Code>
+    </Task>
+  </UsingTask>
+  <Target Name="Build">
+    <ExecProcess FilePath="." Arguments="-n 5 192.168.1.55" />
+  </Target>
+  <Target Name="Rebuild" DependsOnTargets="Clean;Build">
+  </Target>
+  <Target Name="Clean">
+  </Target>
+</Project>

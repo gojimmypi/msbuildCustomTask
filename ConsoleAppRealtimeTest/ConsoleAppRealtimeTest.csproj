@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net46</TargetFramework>
+    <RootNamespace>_5451</RootNamespace>
+  </PropertyGroup>
+
+	<PropertyGroup Condition=" '$(Platform)' == 'ULX3S ECP5-12K' ">
+		<DefineConstants>ULX3S ECP5-12K</DefineConstants>
+		<PlatformTarget>ECP5-12K</PlatformTarget>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Platform)' == 'ULX3S ECP5-45K' ">
+		<DefineConstants>ULX3S ECP5-45K</DefineConstants>
+		<PlatformTarget>ECP5-45K</PlatformTarget>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Platform)' == 'ULX3S ECP5-85K' ">
+		<DefineConstants>ULX3S ECP5-85K</DefineConstants>
+		<PlatformTarget>ECP5-85K</PlatformTarget>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Platform)' == 'iCEBreaker' ">
+		<DefineConstants>iCEBreaker</DefineConstants>
+		<PlatformTarget>iCE40</PlatformTarget>
+	</PropertyGroup>
+
+
+	<Target Name="LogStuffInRealTime" BeforeTargets="CoreCompile">
+    <Exec Command="ping 127.0.0.1" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+      <Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
+    </Exec>
+  </Target>
+  
+  <ItemGroup>
+    <Compile Remove="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
+	<Target Name="CoreClean" 	/>
+	<Target Name="CoreCompile" 	/>
+
+	<ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+</Project>

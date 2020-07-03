@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net46</TargetFramework>
+    <RootNamespace>_5451</RootNamespace>
+  </PropertyGroup>
+  
+  <Target Name="LogStuffInRealTime" BeforeTargets="CoreCompile">
+    <Exec Command="ping 127.0.0.1" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+      <Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
+    </Exec>
+  </Target>
+  
+  <ItemGroup>
+    <Compile Remove="Program.cs" />
+    <Compile Remove="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+</Project>

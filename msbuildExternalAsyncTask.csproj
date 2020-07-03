@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug' ">
+    <OutputPath>bin\</OutputPath>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <RootNamespace>AsyncTask</RootNamespace>
+    <ProjectGuid>{C32098DE-768D-4521-8C70-119A087D9407}</ProjectGuid>
+  </PropertyGroup>
+
+  <UsingTask TaskName="ExternalAsyncTask" AssemblyFile=".\ExternalAsyncTaskLibrary\bin\Debug\ExternalAsyncTask.dll" Condition=" '$(Configuration)' == 'Debug' ">
+  </UsingTask>
+
+  <UsingTask TaskName="ExternalAsyncTask" AssemblyFile=".\ExternalAsyncTaskLibrary\bin\Release\ExternalAsyncTask.dll" Condition=" '$(Configuration)' == 'Release' ">
+  </UsingTask>
+
+  <Target Name="Build">
+    <ExternalAsyncTask  WaitDuration="10000" /> 
+  </Target>
+
+  <Target Name="Rebuild" DependsOnTargets="Clean;Build">
+  </Target>
+  
+  <Target Name="Clean">
+  </Target>
+</Project>

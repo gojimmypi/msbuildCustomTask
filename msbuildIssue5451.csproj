@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug' ">
+    <OutputPath>bin\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>VerilogIssue</RootNamespace>
+    <ProjectGuid>{5A0294F6-03EA-4B72-B83C-0DCD41BBD214}</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup>
+    <InstallBuildDependenciesCmd>.\build\vs-prog.bat</InstallBuildDependenciesCmd>
+    <PipelineDependsOn>
+      InstallBuildDependencies;
+    </PipelineDependsOn>
+  </PropertyGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <Target Name="Build">
+    <Exec Command="ping 192.168.1.1" UseCommandProcessor="false" YieldDuringToolExecution="True" ConsoleToMSBuild="true" Condition="'$(Configuration)'=='Debug' ">
+      <Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
+    </Exec>
+  </Target>
+  <Target Name="Rebuild" DependsOnTargets="Clean;Build">
+  </Target>
+  <Target Name="Clean">
+  </Target>
+</Project>
