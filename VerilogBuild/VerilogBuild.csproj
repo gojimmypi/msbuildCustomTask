@@ -19,6 +19,10 @@
 		<Compile Remove="Properties\AssemblyInfo.cs" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Remove="ulx3s.bit" />
+	</ItemGroup>
+
 	<!-- 
   <ItemGroup>
     <Folder Include="Properties\" />
@@ -26,7 +30,12 @@
   -->
 
 
-
+	<PropertyGroup Condition="Exists('$(windir)\system32\wsl.exe')">
+		<FoundWSL>$(windir)\system32\wsl.exe</FoundWSL>
+	</PropertyGroup>
+	<PropertyGroup Condition="Exists('$(windir)\Sysnative\wsl.exe')">
+		<FoundWSL>$(windir)\Sysnative\wsl.exe</FoundWSL>
+	</PropertyGroup>
 
 	<PropertyGroup>
 		<TargetFramework>net46</TargetFramework>
@@ -46,21 +55,91 @@
 </PropertyGroup>
  -->
 	<PropertyGroup Condition=" '$(Platform)' == 'ULX3S ECP5-12K' ">
-		<DefineConstants>ULX3S ECP5-12K</DefineConstants>
 		<PlatformTarget>ECP5-12K</PlatformTarget>
 	</PropertyGroup>
+
 	<PropertyGroup Condition=" '$(Platform)' == 'ULX3S ECP5-45K' ">
-		<DefineConstants>ULX3S ECP5-45K</DefineConstants>
 		<PlatformTarget>ECP5-45K</PlatformTarget>
 	</PropertyGroup>
+	
 	<PropertyGroup Condition=" '$(Platform)' == 'ULX3S ECP5-85K' ">
-		<DefineConstants>ULX3S ECP5-85K</DefineConstants>
 		<PlatformTarget>ECP5-85K</PlatformTarget>
 	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Platform)' == 'iCEBreaker' ">
-		<DefineConstants>iCEBreaker</DefineConstants>
+	
+	<PropertyGroup Condition=" '$(Platform)' == 'iCEBreaker' "> 
 		<PlatformTarget>iCE40</PlatformTarget>
 	</PropertyGroup>
+
+	<!-- each $(Configuration)|$(Platform) pair needs its own PropertyGroup to appease Project - Poperties - Build - Output Path -->
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|iCEBreaker'">
+		<OutputPath>bin\</OutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|iCEBreaker'">
+		<OutputPath>bin\</OutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Upload|iCEBreaker'">
+		<OutputPath>bin\</OutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Verify|iCEBreaker'">
+		<OutputPath>bin\</OutputPath>
+	</PropertyGroup>
+
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ULX3S ECP5-12K'">
+		<OutputPath>bin\</OutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ULX3S ECP5-12K'">
+		<OutputPath>bin\</OutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Upload|ULX3S ECP5-12K'">
+		<OutputPath>bin\</OutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Verify|ULX3S ECP5-12K'">
+		<OutputPath>bin\</OutputPath>
+	</PropertyGroup>
+
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ULX3S ECP5-45K'">
+		<OutputPath>bin\</OutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ULX3S ECP5-45K'">
+		<OutputPath>bin\</OutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Upload|ULX3S ECP5-45K'">
+		<OutputPath>bin\</OutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Verify|ULX3S ECP5-45K'">
+		<OutputPath>bin\</OutputPath>
+	</PropertyGroup>
+
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ULX3S ECP5-85K'">
+		<OutputPath>bin\</OutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ULX3S ECP5-85K'">
+		<OutputPath>bin\</OutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Upload|ULX3S ECP5-85K'">
+		<OutputPath>bin\</OutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Verify|ULX3S ECP5-85K'">
+		<OutputPath>bin\</OutputPath>
+	</PropertyGroup>
+
+
+
 	<!-- 
 <PropertyGroup>
    <PlatformTarget>iCE40;ULX3S</PlatformTarget>
@@ -147,9 +226,9 @@
 	</Target>
 	<!-- 
 
-%windir%\Sysnative\wsl.exe make ulx3s.bit
-c:\windows\system32\wsl.exe yosys Verilog.ys 
-C:\workspace\ulx3s-examples\bin\ujprog.exe
+:: %windir%\Sysnative\wsl.exe make ulx3s.bit
+:: c:\windows\system32\wsl.exe yosys Verilog.ys 
+:: C:\workspace\ulx3s-examples\bin\ujprog.exe
 
 -->
 	<Target Name="PublishOnly" DependsOnTargets="CreateDirectories">
@@ -198,79 +277,139 @@ C:\workspace\ulx3s-examples\bin\ujprog.exe
 		<StartupObject />
 	</PropertyGroup>
 
-	<Target Name="Upload_ULX3S_12K" AfterTargets="Build" Condition=" '$(Configuration)|$(Platform)'=='Upload|ULX3S ECP5-12K' ">
+
+	<Target Name="Upload_ULX3S_12K" BeforeTargets="CoreCompile" Condition=" '$(Configuration)|$(Platform)'=='Upload|ULX3S ECP5-12K' ">
 		<Message Text="MyPostBuild running...$(Configuration)|$(Platform)" />
 		<Exec Command="echo after build" />
 	</Target>
 
-	<Target Name="Upload_ULX3S_45K" AfterTargets="Build" Condition=" '$(Configuration)|$(Platform)'=='Upload|ULX3S ECP5-45K' ">
+	<Target Name="Upload_ULX3S_45K" BeforeTargets="CoreCompile" Condition=" '$(Configuration)|$(Platform)'=='Upload|ULX3S ECP5-45K' ">
 		<Message Text="MyPostBuild running...$(Configuration)|$(Platform)" />
 		<Exec Command="echo after build" />
 	</Target>
 
-	<Target Name="Upload_ULX3S_85K" AfterTargets="CoreCompile" Condition=" '$(Configuration)|$(Platform)'=='Debug|ULX3S ECP5-85K' ">
-		<Exec Command="ping 192.168.1.1" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+	<!-- Build Debug ULX3S ECP5-85K -->
+	<Target Name="Build_ULX3S_85K" BeforeTargets="CoreCompile" Condition=" '$(Configuration)|$(Platform)'=='Debug|ULX3S ECP5-85K' ">
+		<Message Text="Conditional Build_ULX3S_85K 212 running...$(Configuration)|$(Platform)" />
+		<Exec Command="$(FoundWSL) (make ulx3s.bit -f boards/ulx3s/Makefile-ULX3S-85F.mk )" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
 			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
 		</Exec>
-
 	</Target>
 
-	<Target Name="Upload_iCEBreaker" AfterTargets="CoreBuild" DependsOnTargets="Build_iCEBreaker" Condition=" '$(Configuration)|$(Platform)'=='Upload|iCEBreaker' ">
-		<Message Text="Upload_iCEBreaker 194 running...$(Configuration)|$(Platform)" />
-		<Message Text="echo ." />
-		<Exec Command="echo Upload iCEBreaker!!" />
-		<Message Text="echo ." />
+	<!-- Release ULX3S ECP5-85K -->
+	<Target Name="Release_ULX3S_85K" BeforeTargets="CoreCompile" Condition=" '$(Configuration)|$(Platform)'=='Release|ULX3S ECP5-85K' ">
+		<Message Text="Conditional Release_ULX3S_85K 297 running...$(Configuration)|$(Platform)" />
+		<Exec Command="$(FoundWSL) (make ulx3s.bit -f boards/ulx3s/Makefile-ULX3S-85F.mk )" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
+		</Exec>
 	</Target>
 
-	<Target Name="Upload_iCEBreakerC" DependsOnTargets="Build_iCEBreaker" Condition=" '$(Configuration)|$(Platform)'=='Upload|iCEBreaker' ">
-		<Message Text="Conditional Upload_iCEBreaker 201 running...$(Configuration)|$(Platform)" />
-		<Message Text="echo ." />
-		<Exec Command="echo Upload iCEBreaker!!" />
-		<Message Text="echo ." />
+	<!-- Upload ULX3S ECP5-85K -->
+	<Target Name="Upload_ULX3S_85K" AfterTargets="CoreCompile" Condition=" '$(Configuration)|$(Platform)'=='Upload|ULX3S ECP5-85K' ">
+		<Message Text="Conditional Upload_ULX3S_85K 305 running...$(Configuration)|$(Platform)" />
+		<Exec Command="$(FoundWSL) (make prog -f boards/ulx3s/Makefile-ULX3S-85F.mk )" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
+		</Exec>
 	</Target>
 
+	<!-- Verify ULX3S ECP5-85K -->
+	<Target Name="Verify_ULX3S_85K" AfterTargets="CoreCompile" Condition=" '$(Configuration)|$(Platform)'=='Verify|ULX3S ECP5-85K' ">
+		<Message Text="Conditional Upload_ULX3S_85K 212 running...$(Configuration)|$(Platform)" />
+		<Error Text="Verify Not implemented"></Error>
+		<Exec Command="$(FoundWSL) (echo not implemented )" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
+		</Exec>
+	</Target>
 
-	<Target Name="LogStuffInRealTime" BeforeTargets="CoreCompile">
+	<!-- 
+	**********************************************************************************************************************************
+	Clean
+	**********************************************************************************************************************************
+	-->
+	<Target Name="Clean_ULX3S" AfterTargets="Clean">
+		<Exec Command="$(FoundWSL) (make clean )" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
+		</Exec>
+	</Target>
+	
+	<Target Name="LogStuffInRealTime" BeforeTargets="CoreCompile" Condition=" 1==2 ">
 		<Exec Command="ping 127.0.0.1 -n 6" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
 			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
 		</Exec>
 	</Target>
 
-	<Target Name="Build_iCEBreaker" BeforeTargets="CoreCompile">
-		<Exec Command="echo Build iCEBreaker! 209" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+
+	<!-- 
+	*******************************************************************************************************************************
+	iCEBeeaker
+	******************************************************************************************************************************* -->
+	
+	<!-- Debug iCEBreaker-->
+	<Target Name="Debug_iCEBreaker" Inputs="top_icebreaker.v" Outputs="top_icebreaker.bin" BeforeTargets="CoreCompile" Condition=" '$(Configuration)|$(Platform)'=='Debug|iCEBreaker' ">
+		<Message Text="Build_iCEBreaker $(Configuration)|$(Platform)" />
+		<Exec Command="$(FoundWSL) (make -f boards/icebreaker/main.mk)" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
 			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
 		</Exec>
-		<Message Text="" />
-		<Message Text="Upload iCEBreaker! 223!" />
-		<Message Text="Platform=$(Platform)" />
+	</Target>
+
+	<!-- Release iCEBreaker-->
+	<Target Name="Release_iCEBreaker" Inputs="top_icebreaker.v" Outputs="top_icebreaker.bin" BeforeTargets="CoreCompile" Condition=" '$(Configuration)|$(Platform)'=='Release|iCEBreaker' ">
+		<Message Text="Build_iCEBreaker $(Configuration)|$(Platform)" />
+		<Exec Command="$(FoundWSL) (make -f boards/icebreaker/main.mk)" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
+		</Exec>
+	</Target>
+
+	<!-- Upload iCEBreaker-->
+	<Target Name="Upload_iCEBreaker" Outputs="top_icebreaker.bin" AfterTargets="CoreBuild" DependsOnTargets="Build_iCEBreaker" Condition=" '$(Configuration)|$(Platform)'=='Upload|iCEBreaker' ">
+		<Message Text="Upload_iCEBreaker $(Configuration)|$(Platform)" />
+		<Exec Command="$(FoundWSL) (make prog -f boards/icebreaker/main.mk )" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
+		</Exec>
+	</Target>
+	
+	<!-- Verify iCEBreaker-->
+	<Target Name="Verify_iCEBreaker" Outputs="top_icebreaker.bin" AfterTargets="CoreBuild" DependsOnTargets="Build_iCEBreaker" Condition=" '$(Configuration)|$(Platform)'=='Verify|iCEBreaker' ">
+		<Message Text="Upload_iCEBreaker $(Configuration)|$(Platform)" />
+		<Error Text="Verify Not implemented"></Error>
+		<Exec Command="$(FoundWSL) (echo not implemented )" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
+		</Exec>
 	</Target>
 
 
+	<!-- Clean iCEBreaker-->	
+	<Target Name="Clean_iCEBreaker" AfterTargets="Clean">
+		<Exec Command="$(FoundWSL) (make clean -f boards/icebreaker/main.mk )" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
+		</Exec>
+	</Target>
+
 	<!-- we cannot override CoreCompile
-  <Target Name="CoreCompile" DependsOnTargets="InitFPGA;SwitchToAnyCpu">
-    <Message Text="Running CoreCompile ... $(TargetDir)" />
-  </Target>
-  <Target Name="CoreClean">
-    <Message Text="Running CoreClean ... $(OutputPath)" />
-    <Delete Files="$(OutputPath)$(AssemblyName).exe" />
-  </Target>
+	<Target Name="CoreCompile" DependsOnTargets="InitFPGA;SwitchToAnyCpu">
+		<Message Text="Running CoreCompile ... $(TargetDir)" />
+	</Target>
+	<Target Name="CoreClean">
+		<Message Text="Running CoreClean ... $(OutputPath)" />
+		<Delete Files="$(OutputPath)$(AssemblyName).exe" />
+	</Target>
 
-  <Target Name="CoreClean">
-    <Message Text="Running CoreClean ... $(OutputPath)" />
-    <Delete Files="$(OutputPath)$(AssemblyName).exe" />
-  </Target>
-
--->
+	<Target Name="CoreClean">
+		<Message Text="Running CoreClean ... $(OutputPath)" />
+		<Delete Files="$(OutputPath)$(AssemblyName).exe" />
+	</Target>
+	-->
 
 	<!-- For the main C# compile, we need to switch platform -->
-	<Target Name="SwitchToAnyCpu" BeforeTargets="CoreCompile" AfterTargets="Build_iCEBreaker">
+	<Target Name="SwitchToAnyCpu" BeforeTargets="CoreCompile" AfterTargets="Build_iCEBreaker;Upload_iCEBreaker;Build_ULX3S_85K">
 		<Message Text="Platform=$(Platform)" />
 		<Message Text="PlatformTarget=$(PlatformName)" />
 		<PropertyGroup>
+			<!-- we'll first save the current values for later use -->
 			<MyStartupPlatform>$(Platform)</MyStartupPlatform>
 			<MyStartupPlatformTarget>$(PlatformTarget)</MyStartupPlatformTarget>
-			<MyStartupPlatform>$(Platform)</MyStartupPlatform>
-			<MyStartupPlatformTarget>$(PlatformTarget)</MyStartupPlatformTarget>
+			
+			<!-- now we'll switch to anycpu-->
 			<Platform>anycpu</Platform>
 			<PlatformTarget>anycpu</PlatformTarget>
 		</PropertyGroup>
@@ -279,7 +418,7 @@ C:\workspace\ulx3s-examples\bin\ujprog.exe
 	</Target>
 
 	<!-- after the core compile, switch back to the seleted FPGA -->
-	<Target Name="SwitchToMyStartupPlatform" AfterTargets="CoreCompile">
+	<Target Name="SwitchToMyStartupPlatform" AfterTargets="xCoreCompile">
 		<Message Text="Running SwitchToMyStartupPlatform..." />
 		<PropertyGroup>
 			<Platform>$(MyStartupPlatform)</Platform>
@@ -289,21 +428,29 @@ C:\workspace\ulx3s-examples\bin\ujprog.exe
 		<Message Text="PlatformTarget=$(PlatformTarget)" />
 	</Target>
 
-
-	<!-- after the core compile, switch back to the seleted FPGA -->
-	<Target Name="SwitchToMyStartupPlatform" AfterTargets="CoreCompile">
-		<Message Text="Running SwitchToMyStartupPlatform.." />
-		<PropertyGroup>
-			<Platform>$(MyStartupPlatform)</Platform>
-			<PlatformTarget>$(MyStartupPlatformTarget)</PlatformTarget>
+	<!-- make sure we have WSL installed! -->
+	<Target Name="VerifyWSL">
+		<!-- 
+		Depending on the calling environment, WSL may by in system32 or Sysnative 
+		Typically in 32bit Visual Studio on a 64bit OS, the value will be in Sysnative
+		
+		Upon success, FoundWSL=C:\WINDOWS\Sysnative\wsl.exe
+		-->
+		<PropertyGroup Condition="Exists('$(windir)\system32\wsl.exe')">
+			<FoundWSL>$(windir)\system32\wsl.exe</FoundWSL>
 		</PropertyGroup>
-		<Message Text="Platform=$(Platform)" />
-		<Message Text="PlatformTarget=$(PlatformTarget)" />
+		<PropertyGroup Condition="Exists('$(windir)\Sysnative\wsl.exe')">
+			<FoundWSL>$(windir)\Sysnative\wsl.exe</FoundWSL>
+		</PropertyGroup>
+		<Message Text="FoundWSL=$(FoundWSL)"></Message>
 	</Target>
 
-	<Target Name="InitFPGA">
+	<Target Name="InitFPGA" DependsOnTargets="VerifyWSL">
 		<Message Text="Running InitFPGA ... '$(Configuration)|$(Platform)' " />
 		<Message Text="VCTargetsPath = $(VCTargetsPath)">  </Message>
+		<Message Text="Using WSL in = $(FoundWSL)" Condition=" $(FoundWSL) != '' "></Message>
+		<Error Text="WSL Not found!" Condition=" $(FoundWSL) == '' "></Error>
+
 		<!-- Any generic, all-board, all build initialization will go here-->
 	</Target>
 
