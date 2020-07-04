@@ -1,0 +1,106 @@
+﻿<Project Sdk="Microsoft.NET.Sdk" DefaultTargets="NoTarget">
+	<!--
+  For tips on editing this file, see https://docs.microsoft.com/en-us/visualstudio/msbuild/target-build-order?view=vs-2019
+
+  see: https://docs.microsoft.com/en-us/visualstudio/msbuild/how-to-extend-the-visual-studio-build-process?view=vs-2019
+  "Be sure to use different names than the predefined targets listed in the table in the previous section 
+  (for example, we named the custom build target here CustomAfterBuild, not AfterBuild), since those predefined 
+  targets are overridden by the SDK import which also defines them. You don't see the import of the target file 
+  that overrides those targets, but it is implicitly added to the end of the project file when you use the Sdk 
+  attribute method of referencing an SDK."
+-->
+	<ItemGroup>
+		<None Include="Properties\AssemblyInfo.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Remove="Properties\AssemblyInfo.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Remove="ulx3s.bit" />
+	</ItemGroup>
+
+	<PropertyGroup>
+		<TargetFramework>net46</TargetFramework>
+		<RootNamespace>VerilogLanguage</RootNamespace>
+		<Platforms>ULX3S ECP5-12K;ULX3S ECP5-45K;ULX3S ECP5-85K;iCEBreaker</Platforms>
+		<Configurations>Debug;Release;Upload;Verify</Configurations>
+	</PropertyGroup>
+
+
+	<PropertyGroup Condition=" '$(Platform)' == 'iCEBreaker' ">
+		<PlatformTarget>iCE40</PlatformTarget>
+	</PropertyGroup>
+
+	<!-- each $(Configuration)|$(Platform) pair needs its own PropertyGroup to appease Project - Poperties - Build - Output Path -->
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|iCEBreaker'">
+		<OutputPath>bin\</OutputPath>
+	</PropertyGroup>
+
+	<Target Name="CustomClean" AfterTargets="Clean">
+		<Message Text="Cleaning Verilog Files" />
+		<RemoveDir Directories="$(OutputPath)" />
+		<Delete Files="top.json"></Delete>
+		<Delete Files="another.bit"></Delete>
+		<Delete Files="other.json"></Delete> <!-- if this file is manually created, outside of visual studio - it will stay gone when deleted -->
+	</Target>
+
+	<!-- 
+	*******************************************************************************************************************************
+	iCEBeeaker
+	******************************************************************************************************************************* -->
+	<!-- Build Debug iCEBreaker-->
+	<Target Name="Debug_iCEBreaker" Inputs="top_icebreaker.v" Outputs="top_icebreaker.bin" BeforeTargets="CoreCompile" Condition=" '$(Configuration)|$(Platform)'=='Debug|iCEBreaker' ">
+		<Message Text="Build_iCEBreaker $(Configuration)|$(Platform)" />
+		<Exec Command="echo wow > top.json" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
+		</Exec>
+		<Exec Command="echo wow > another.bit" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
+		</Exec>
+		<Message Text="Done creating files!" />
+	</Target>
+
+
+	<!-- Clean iCEBreaker-->
+	<Target Name="Clean_iCEBreaker" AfterTargets="Clean">
+		<Message Text="Clean_iCEBreaker $(Configuration)|$(Platform)" />
+		<Exec Command="dir top.json" ContinueOnError="true" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
+		</Exec>
+		<Message Text="Done cleaning files!" />
+	</Target>
+
+
+	<!-- For the main C# compile, we need to switch platform -->
+	<Target Name="SwitchToAnyCpu" BeforeTargets="CoreCompile" AfterTargets="Build_iCEBreaker;Upload_iCEBreaker;Build_ULX3S_85K">
+		<Message Text="Platform=$(Platform)" />
+		<Message Text="PlatformTarget=$(PlatformName)" />
+		<PropertyGroup>
+			<!-- we'll first save the current values for later use -->
+			<MyStartupPlatform>$(Platform)</MyStartupPlatform>
+			<MyStartupPlatformTarget>$(PlatformTarget)</MyStartupPlatformTarget>
+
+			<!-- now we'll switch to anycpu-->
+			<Platform>anycpu</Platform>
+			<PlatformTarget>anycpu</PlatformTarget>
+		</PropertyGroup>
+		<Message Text="Platform=$(Platform)" />
+		<Message Text="PlatformTarget=$(PlatformTarget)" />
+	</Target>
+
+	<!-- after the core compile, switch back to the seleted FPGA -->
+	<Target Name="SwitchToMyStartupPlatform" AfterTargets="CoreCompile">
+		<Message Text="Running SwitchToMyStartupPlatform..." />
+		<PropertyGroup>
+			<Platform>$(MyStartupPlatform)</Platform>
+			<PlatformTarget>$(MyStartupPlatformTarget)</PlatformTarget>
+		</PropertyGroup>
+		<Message Text="Platform=$(Platform)" />
+		<Message Text="PlatformTarget=$(PlatformTarget)" />
+	</Target>
+
+
+
+</Project>
