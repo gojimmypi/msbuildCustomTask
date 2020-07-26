@@ -3,6 +3,7 @@
 Here, we note the [comment](https://github.com/dotnet/msbuild/issues/5486#issuecomment-655622281) regarding [design-time builds](https://github.com/dotnet/project-system/blob/master/docs/design-time-builds.md#designing-targets-for-use-in-design-time-builds).
 This `noDesignTimeBuild` is an example of *not* relentlessing running. (e.g. the `init.log` is not found at startup time)
 
+This project file looks like this:
 ```
 	<Target Name="AddAdditionalReferences" BeforeTargets="ResolveAssemblyReferences">
 		<PropertyGroup Condition="'$(DesignTimeBuild)' == 'true' OR '$(BuildingProject)' != 'true'">
@@ -16,7 +17,7 @@ This `noDesignTimeBuild` is an example of *not* relentlessing running. (e.g. the
 	</Target>
 ```
 
-Note similar [relentlessTask Project](../relentlessTask/relentlessTask.csproj) in Visual Studio 2017 or 2019 will create the `init.log` file immediately, even before build.
+Note the similar [relentlessTask Project](../relentlessTask/relentlessTask.csproj) in Visual Studio 2017 or 2019 which will create the `init.log` file immediately, even before build.
 
 Delete the `init.log` file in `relentlessTask`. Note how it comes back. Build this `noDesignTimeBuild`. Note the `init.log` file. Delete the `init.log`. It does _not_ come back automatically.
 
