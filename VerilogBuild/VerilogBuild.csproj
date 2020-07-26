@@ -525,7 +525,8 @@
 
 	<Target Name="VerifyToolchain" DependsOnTargets="VerifyWSL">
 		<Exec Command="$(FoundWSL) yosys --version" />
-		<Exec Command="$(FoundWSL) yosys --version" />
+		<Exec Command="$(FoundWSL) nextpnr-ecp5 --version" />
+		
 	</Target>
 
 	<Target Name="InitFPGA" DependsOnTargets="VerifyWSL;VerifyToolchain" BeforeTargets="CoreCompile">
