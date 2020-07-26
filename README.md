@@ -4,7 +4,7 @@ Here there be lions and tigers and beware of msbuild monsters.
 
 Included here are various examples of custom [MSBuild](https://docs.microsoft.com/en-us/visualstudio/msbuild/msbuild?view=vs-2019) tasks. I created each of these in an attempt to get 
 [realtime output during a custom build process](https://github.com/gojimmypi/VerilogLanguageExtension/pull/25#issuecomment-640259595) 
-for my [Verilog Language Extension](https://marketplace.visualstudio.com/items?itemName=gojimmypi.gojimmypi-verilog-language-extension),
+for my [Verilog Language Extension](https://marketplace.visualstudio.com/items?itemName=gojimmypi.gojimmypi-verilog-language-extension).
 Running everything and burping out the results at the end is typically not desirable on a long running process such as FPGA syntesis.
 
 All projects are assumed to be compiled in `Debug` configuration.
@@ -12,6 +12,8 @@ All projects are assumed to be compiled in `Debug` configuration.
 See `Debug - Options - Projects and Solutions - Build and Run` for output verbosity settings:
 
 ![msbuild_output_verbosity](./images/msbuild_output_verbosity.png)
+
+Also, the [Project System Tools](https://marketplace.visualstudio.com/items?itemName=VisualStudioProductTeam.ProjectSystemTools) may be helpful for `View > Other Windows > Build Logging`.
 
 ## Realtime Console Output
 
@@ -43,6 +45,22 @@ The key seems to be the project wrapper:
 
 See [Target frameworks in SDK-style projects](https://docs.microsoft.com/en-us/dotnet/standard/frameworks)
 and [How to: Use MSBuild project SDKs](https://docs.microsoft.com/en-us/visualstudio/msbuild/how-to-use-project-sdk?view=vs-2019)
+
+*Note*: a `Sdk="Microsoft.NET.Sdk"` project is only _part_ of the solution. I soon discovered that although the output is sent to the build window in real time, I had a new problem
+with [relentlessly running builds](./relentlessTask/README.md). Once again [@rainersigwald](https://github.com/dotnet/msbuild/issues/5486#issuecomment-655622281) to the rescue.
+I'm not sure how long it would have taken me to discover that [Design Time Build](https://github.com/dotnet/project-system/blob/master/docs/design-time-builds.md) "feature" on my own. 
+See also the [noDesignTimeBuild](./noDesignTimeBuild/README.md) for an example of disabling the relentless build feature.
+
+## Final Solution
+
+Although there are a variety of potentially interesting build tasks below, my final solution can be found in the [VerilogBuild Project](./VerilogBuild/README.md). This is the file that 
+I will use in my [Verilog Language Extension](https://github.com/gojimmypi/VerilogLanguageExtension/blob/master/README.md) for [Project Templates](https://github.com/gojimmypi/VerilogLanguageExtension/tree/development-interim/ProjectTemplate).
+
+
+
+* TODO link still pointing to `development-interim` branch.
+
+
 
 ## Realtime Console Output Default (not really realtime)
 
