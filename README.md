@@ -2,7 +2,7 @@
 
 Here there be lions and tigers and beware of msbuild monsters.
 
-Included here are various examples of custom MSBuild tasks. I created each of these in an attempt to get 
+Included here are various examples of custom [MSBuild](https://docs.microsoft.com/en-us/visualstudio/msbuild/msbuild?view=vs-2019) tasks. I created each of these in an attempt to get 
 [realtime output during a custom build process](https://github.com/gojimmypi/VerilogLanguageExtension/pull/25#issuecomment-640259595) 
 for my [Verilog Language Extension](https://marketplace.visualstudio.com/items?itemName=gojimmypi.gojimmypi-verilog-language-extension),
 Running everything and burping out the results at the end is typically not desirable on a long running process such as FPGA syntesis.
@@ -61,15 +61,15 @@ Although using the same syntax as above, this project does _not_ display output 
 
 ## Inline Parameterized Process Task
 
-Build the `msbuildInlineProcessTask` project. Notice there is no `ping` output in DOS nor IDE output window. (it _does_ run)
+Build the `msbuildInlineProcessTask` [project](./msbuildInlineProcessTask.csproj). Notice there is no `ping` output in DOS nor IDE output window. (it _does_ run)
 
 ## Inline Parameterized Process Task with Redirected Standard Output and Wait for Exit
 
-Build the `msbuildInlineProcessWaitForExitTask` project. Notice `ping` output in IDE output window. (no DOS popup)
+Build the `msbuildInlineProcessWaitForExitTask` [project](msbuildInlineProcessWaitForExitTask.csproj). Notice `ping` output in IDE output window. (no DOS popup)
 
 ## Inline Parameterized Process Task in Shell
 
-Build the `msbuildInlineProcessShellTask` project. Notice how `ping` shows up in DOS window, no output logged to Visual Studio IDE.
+Build the `msbuildInlineProcessShellTask` [project](msbuildInlineProcessShellTask.csproj). Notice how `ping` shows up in DOS window, no output logged to Visual Studio IDE.
 
 ## Asynchronous Inline Task
 
