@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+	</PropertyGroup>
+
+	<Target Name="AddAdditionalReferences" BeforeTargets="ResolveAssemblyReferences">
+		<PropertyGroup Condition="'$(DesignTimeBuild)' == 'true' OR '$(BuildingProject)' != 'true'">
+			<_AvoidExpensiveCalculation>true</_AvoidExpensiveCalculation>
+		</PropertyGroup>
+	</Target>	
+	
+	<Target Name="RelentlessCommand" BeforeTargets="CoreCompile" Condition=" $(_AvoidExpensiveCalculation)=='' ">
+		<Exec Command="echo wow $(DesignTimeBuild) &gt; init.log">
+		</Exec>
+	</Target>
+	
+</Project>
