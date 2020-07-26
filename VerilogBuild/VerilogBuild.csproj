@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk" DefaultTargets="NoTarget" InitialTargets="InitFPGA">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<!--
   For tips on editing this file, see https://docs.microsoft.com/en-us/visualstudio/msbuild/target-build-order?view=vs-2019
 
@@ -10,8 +10,6 @@
   attribute method of referencing an SDK."
 -->
 	<ItemGroup>
-		<None Include="myCustomCommand.ps1" />
-		<None Include="myCustomCommand.bat" />
 		<None Include="Properties\AssemblyInfo.cs" />
 	</ItemGroup>
 
@@ -23,12 +21,16 @@
 	  <None Remove="ulx3s.bit" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="boards\orangecrab\" />
+	</ItemGroup>
+
 	<!-- 
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>  
   -->
-
+	
 
 	<PropertyGroup Condition="Exists('$(windir)\system32\wsl.exe')">
 		<FoundWSL>$(windir)\system32\wsl.exe</FoundWSL>
@@ -40,7 +42,7 @@
 	<PropertyGroup>
 		<TargetFramework>net46</TargetFramework>
 		<RootNamespace>VerilogLanguage</RootNamespace>
-		<Platforms>ULX3S ECP5-12K;ULX3S ECP5-45K;ULX3S ECP5-85K;iCEBreaker</Platforms>
+		<Platforms>ULX3S ECP5-12K;ULX3S ECP5-45K;ULX3S ECP5-85K;iCEBreaker;Orange Crab</Platforms>
 		<Configurations>Debug;Release;Upload;Verify</Configurations>
 	</PropertyGroup>
 
@@ -70,6 +72,11 @@
 		<PlatformTarget>iCE40</PlatformTarget>
 	</PropertyGroup>
 
+	<PropertyGroup Condition=" '$(Platform)' == 'Orange Crab' ">
+		<PlatformTarget>ECP5-25F</PlatformTarget>
+	</PropertyGroup>
+	
+
 	<!-- each $(Configuration)|$(Platform) pair needs its own PropertyGroup to appease Project - Poperties - Build - Output Path -->
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|iCEBreaker'">
 		<OutputPath>bin\</OutputPath>
@@ -84,6 +91,23 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Verify|iCEBreaker'">
+		<OutputPath>bin\</OutputPath>
+	</PropertyGroup>
+
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Orange Crab'">
+		<OutputPath>bin\</OutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Orange Crab'">
+		<OutputPath>bin\</OutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Upload|Orange Crab'">
+		<OutputPath>bin\</OutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Verify|Orange Crab'">
 		<OutputPath>bin\</OutputPath>
 	</PropertyGroup>
 
@@ -216,8 +240,8 @@
   https://stackoverflow.com/questions/2387456/msbuild-exec-task-without-blocking
   -->
 
-	<Target Name="NoTarget">
-		<Message Text="No target specified" />
+	<Target Name="NoTarget" Condition=" '$(Configuration)|$(Platform)'=='' ">
+		<Error Text="No target specified"></Error>
 	</Target>
 
 
@@ -241,6 +265,7 @@
 	<Target Name="CustomClean">
 		<Message Text="Cleaning Verilog Files" />
 		<RemoveDir Directories="$(OutputPath)" />
+		<Delete Files="top.json"></Delete>
 	</Target>
 
 	<!--
@@ -289,11 +314,14 @@
 	</Target>
 
 	<!-- Build Debug ULX3S ECP5-85K -->
-	<Target Name="Build_ULX3S_85K" BeforeTargets="CoreCompile" Condition=" '$(Configuration)|$(Platform)'=='Debug|ULX3S ECP5-85K' ">
+	<Target Name="Build_ULX3S_85K" DependsOnTargets="InitFPGA" AfterTargets="InitFPGA" BeforeTargets="SwitchToAnyCpu" Condition=" '$(Configuration)|$(Platform)'=='Debug|ULX3S ECP5-85K' ">
 		<Message Text="Conditional Build_ULX3S_85K 212 running...$(Configuration)|$(Platform)" />
 		<Exec Command="$(FoundWSL) (make ulx3s.bit -f boards/ulx3s/Makefile-ULX3S-85F.mk )" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
 			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
 		</Exec>
+		<PropertyGroup>
+			<SynthesisComplete>true</SynthesisComplete>
+		</PropertyGroup>
 	</Target>
 
 	<!-- Release ULX3S ECP5-85K -->
@@ -326,7 +354,7 @@
 	Clean
 	**********************************************************************************************************************************
 	-->
-	<Target Name="Clean_ULX3S" AfterTargets="Clean">
+	<Target Name="Clean_ULX3S" AfterTargets="Clean" Condition=" '$(Platform)'=='ULX3S ECP5-12K' Or '$(Platform)'=='ULX3S ECP5-45K' Or '$(Platform)'=='ULX3S ECP5-85K' ">
 		<Exec Command="$(FoundWSL) (make clean )" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
 			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
 		</Exec>
@@ -338,6 +366,8 @@
 		</Exec>
 	</Target>
 
+	
+	
 
 	<!-- 
 	*******************************************************************************************************************************
@@ -379,8 +409,54 @@
 
 
 	<!-- Clean iCEBreaker-->	
-	<Target Name="Clean_iCEBreaker" AfterTargets="Clean">
+	<Target Name="Clean_iCEBreaker" AfterTargets="Clean" Condition=" '$(Platform)'=='iCEBreaker' ">
 		<Exec Command="$(FoundWSL) (make clean -f boards/icebreaker/main.mk )" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
+		</Exec>
+	</Target>
+
+	<!-- 
+	*******************************************************************************************************************************
+	Orange Crab
+	******************************************************************************************************************************* -->
+
+	<!-- Debug Orange_Crab-->
+	<Target Name="Debug_Orange_Crab" Inputs="top_Orange_Crab.v" Outputs="top_Orange_Crab.bin" BeforeTargets="CoreCompile" Condition=" '$(Configuration)|$(Platform)'=='Debug|Orange Crab' ">
+		<Message Text="Build_Orange_Crab $(Configuration)|$(Platform)" />
+		<Exec Command="$(FoundWSL)  (cd boards/orangecrab/; make -f Makefile)" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
+		</Exec>
+	</Target>
+
+	<!-- Release Orange_Crab-->
+	<Target Name="Release_Orange_Crab" Inputs="top_Orange_Crab.v" Outputs="top_Orange_Crab.bin" BeforeTargets="CoreCompile" Condition=" '$(Configuration)|$(Platform)'=='Release|Orange Crab' ">
+		<Message Text="Build_Orange_Crab $(Configuration)|$(Platform)" />
+		<Exec Command="$(FoundWSL) (cd boards/orangecrab/; make -f boards/orangecrab/Makefile)" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
+		</Exec>
+	</Target>
+
+	<!-- Upload Orange_Crab-->
+	<Target Name="Upload_Orange_Crab" Outputs="top_Orange_Crab.bin" AfterTargets="CoreBuild" DependsOnTargets="Build_Orange_Crab" Condition=" '$(Configuration)|$(Platform)'=='Upload|Orange Crab' ">
+		<Message Text="Upload_Orange_Crab $(Configuration)|$(Platform)" />
+		<Exec Command="$(FoundWSL) (cd boards/orangecrab/; make prog -f boards/orangecrab/Makefile )" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
+		</Exec>
+	</Target>
+
+	<!-- Verify Orange_Crab-->
+	<Target Name="Verify_Orange_Crab" Outputs="top_Orange_Crab.bin" AfterTargets="CoreBuild" DependsOnTargets="Build_Orange_Crab" Condition=" '$(Configuration)|$(Platform)'=='Verify|Orange Crab' ">
+		<Message Text="Upload_Orange_Crab $(Configuration)|$(Platform)" />
+		<Error Text="Verify Not implemented"></Error>
+		<Exec Command="$(FoundWSL) (echo not implemented )" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
+		</Exec>
+	</Target>
+
+
+	<!-- Clean Orange_Crab-->
+	<Target Name="Clean_Orange_Crab" BeforeTargets="Clean" Condition=" '$(Platform)'=='Orange Crab' ">
+		<Exec Command="$(FoundWSL) (cd boards/orangecrab/; make -f Makefile clean )" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
 			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
 		</Exec>
 	</Target>
@@ -400,8 +476,9 @@
 	</Target>
 	-->
 
+	
 	<!-- For the main C# compile, we need to switch platform -->
-	<Target Name="SwitchToAnyCpu" BeforeTargets="CoreCompile" AfterTargets="Build_iCEBreaker;Upload_iCEBreaker;Build_ULX3S_85K">
+	<Target Name="SwitchToAnyCpu" BeforeTargets="CoreCompile">
 		<Message Text="Platform=$(Platform)" />
 		<Message Text="PlatformTarget=$(PlatformName)" />
 		<PropertyGroup>
@@ -442,14 +519,19 @@
 		<PropertyGroup Condition="Exists('$(windir)\Sysnative\wsl.exe')">
 			<FoundWSL>$(windir)\Sysnative\wsl.exe</FoundWSL>
 		</PropertyGroup>
-		<Message Text="FoundWSL=$(FoundWSL)"></Message>
+		<Message Text="FoundWSL=$(FoundWSL)" Condition=" $(FoundWSL) != '' "></Message>
+		<Error Text="WSL Not found!" Condition=" $(FoundWSL) == '' "></Error>
 	</Target>
 
-	<Target Name="InitFPGA" DependsOnTargets="VerifyWSL">
+	<Target Name="VerifyToolchain" DependsOnTargets="VerifyWSL">
+		<Exec Command="$(FoundWSL) yosys --version" />
+		<Exec Command="$(FoundWSL) yosys --version" />
+	</Target>
+
+	<Target Name="InitFPGA" DependsOnTargets="VerifyWSL;VerifyToolchain" BeforeTargets="CoreCompile">
 		<Message Text="Running InitFPGA ... '$(Configuration)|$(Platform)' " />
 		<Message Text="VCTargetsPath = $(VCTargetsPath)">  </Message>
 		<Message Text="Using WSL in = $(FoundWSL)" Condition=" $(FoundWSL) != '' "></Message>
-		<Error Text="WSL Not found!" Condition=" $(FoundWSL) == '' "></Error>
 
 		<!-- Any generic, all-board, all build initialization will go here-->
 	</Target>
