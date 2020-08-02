@@ -77,4 +77,4 @@ top.json: top.ys top.v
 	yosys top.ys
 
 prog: ulx3s.bit
-	/mnt/c/workspace/ulx3s-examples/bin/ujprog.exe ulx3s.bit
+	/mnt/c/workspace/fujprog/build/fujprog.exe ulx3s.bit
