@@ -9,6 +9,14 @@
   that overrides those targets, but it is implicitly added to the end of the project file when you use the Sdk 
   attribute method of referencing an SDK."
 -->
+	
+	<Target Name="AddAdditionalReferences" BeforeTargets="ResolveAssemblyReferences">
+		<!-- see https://github.com/dotnet/msbuild/issues/5486#issuecomment-657122932 -->
+		<PropertyGroup Condition="'$(DesignTimeBuild)' == 'true' OR '$(BuildingProject)' != 'true'">
+			<_AvoidTargetStep>true</_AvoidTargetStep>
+		</PropertyGroup>
+	</Target>
+	
 	<ItemGroup>
 		<None Include="Properties\AssemblyInfo.cs" />
 	</ItemGroup>
@@ -56,24 +64,44 @@
 <Platforms>ECP5-12K;iCE40</Platforms>
 </PropertyGroup>
  -->
+
+	<!--
+	Radiona ULX3S
+	
+	Edit with caution! See makefile when changing BitstreamFilename
+	-->
 	<PropertyGroup Condition=" '$(Platform)' == 'ULX3S ECP5-12K' ">
 		<PlatformTarget>ECP5-12K</PlatformTarget>
+		<BitstreamProgrammerType>ULX3S</BitstreamProgrammerType>
+		<BitstreamFilename>ulx3s.bit</BitstreamFilename>
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(Platform)' == 'ULX3S ECP5-45K' ">
 		<PlatformTarget>ECP5-45K</PlatformTarget>
+		<BitstreamProgrammerType>ULX3S</BitstreamProgrammerType>
+		<BitstreamFilename>ulx3s.bit</BitstreamFilename>
 	</PropertyGroup>
 	
 	<PropertyGroup Condition=" '$(Platform)' == 'ULX3S ECP5-85K' ">
 		<PlatformTarget>ECP5-85K</PlatformTarget>
+		<BitstreamProgrammerType>ULX3S</BitstreamProgrammerType>
+		<BitstreamFilename>ulx3s.bit</BitstreamFilename>
 	</PropertyGroup>
-	
+
+	<!--
+	iCEBreaker
+	-->
 	<PropertyGroup Condition=" '$(Platform)' == 'iCEBreaker' "> 
 		<PlatformTarget>iCE40</PlatformTarget>
 	</PropertyGroup>
 
+	<!--
+	Orange Crab
+	-->
 	<PropertyGroup Condition=" '$(Platform)' == 'Orange Crab' ">
 		<PlatformTarget>ECP5-25F</PlatformTarget>
+		<BitstreamProgrammerType>ULX3S</BitstreamProgrammerType>
+		<BitstreamFilename>blink.dfu</BitstreamFilename>
 	</PropertyGroup>
 	
 
@@ -302,21 +330,18 @@
 		<StartupObject />
 	</PropertyGroup>
 
-
-	<Target Name="Upload_ULX3S_12K" BeforeTargets="CoreCompile" Condition=" '$(Configuration)|$(Platform)'=='Upload|ULX3S ECP5-12K' ">
-		<Message Text="MyPostBuild running...$(Configuration)|$(Platform)" />
-		<Exec Command="echo after build" />
-	</Target>
-
-	<Target Name="Upload_ULX3S_45K" BeforeTargets="CoreCompile" Condition=" '$(Configuration)|$(Platform)'=='Upload|ULX3S ECP5-45K' ">
-		<Message Text="MyPostBuild running...$(Configuration)|$(Platform)" />
-		<Exec Command="echo after build" />
-	</Target>
-
+	<PropertyGroup Label="ULX3S">
+		<!-- without this, result is: Task "CallTarget" skipped, due to false condition; ('$(TargetsTriggeredByCompilation)' != '') was evaluated as ('' != ''). -->
+		<TargetsTriggeredByCompilation Condition=" '$(Platform)'=='ULX3S ECP5-85K' ">
+			$(TargetsTriggeredByCompilation);
+			Build_ULX3S_85K
+		</TargetsTriggeredByCompilation>
+	</PropertyGroup>
+	
 	<!-- Build Debug ULX3S ECP5-85K -->
-	<Target Name="Build_ULX3S_85K" DependsOnTargets="InitFPGA" AfterTargets="InitFPGA" BeforeTargets="SwitchToAnyCpu" Condition=" '$(Configuration)|$(Platform)'=='Debug|ULX3S ECP5-85K' ">
-		<Message Text="Conditional Build_ULX3S_85K 212 running...$(Configuration)|$(Platform)" />
-		<Exec Command="$(FoundWSL) (make ulx3s.bit -f boards/ulx3s/Makefile-ULX3S-85F.mk )" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+	<Target Name="Build_ULX3S_85K" DependsOnTargets="InitFPGA" AfterTargets="InitFPGA" BeforeTargets="SwitchToAnyCpu;Upload_ULX3S_85K">
+		<Message Text="Conditional Build_ULX3S_85K 318 running...$(Configuration)|$(Platform)" />
+		<Exec Command="$(FoundWSL) (make $(BitstreamFilename) -f boards/ulx3s/Makefile-ULX3S-85F.mk )" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
 			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
 		</Exec>
 		<PropertyGroup>
@@ -326,16 +351,30 @@
 
 	<!-- Release ULX3S ECP5-85K -->
 	<Target Name="Release_ULX3S_85K" BeforeTargets="CoreCompile" Condition=" '$(Configuration)|$(Platform)'=='Release|ULX3S ECP5-85K' ">
-		<Message Text="Conditional Release_ULX3S_85K 297 running...$(Configuration)|$(Platform)" />
-		<Exec Command="$(FoundWSL) (make ulx3s.bit -f boards/ulx3s/Makefile-ULX3S-85F.mk )" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+		<Message Text="Conditional Release_ULX3S_85K 329 running...$(Configuration)|$(Platform)" />
+		<Exec Command="$(FoundWSL) (make $(BitstreamFilename) -f boards/ulx3s/Makefile-ULX3S-85F.mk )" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
 			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
 		</Exec>
 	</Target>
 
+	<!-- Upload ULX3S ECP5-12K -->
+	<Target Name="Upload_ULX3S_12K" BeforeTargets="CoreCompile" Condition=" '$(Configuration)|$(Platform)'=='Upload|ULX3S ECP5-12K' ">
+		<Message Text="MyPostBuild running...$(Configuration)|$(Platform)" />
+		<Exec Command="echo after build" />
+	</Target>
+
 	<!-- Upload ULX3S ECP5-85K -->
-	<Target Name="Upload_ULX3S_85K" AfterTargets="CoreCompile" Condition=" '$(Configuration)|$(Platform)'=='Upload|ULX3S ECP5-85K' ">
-		<Message Text="Conditional Upload_ULX3S_85K 305 running...$(Configuration)|$(Platform)" />
-		<Exec Command="$(FoundWSL) (make prog -f boards/ulx3s/Makefile-ULX3S-85F.mk )" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+	<Target Name="Upload_ULX3S_45K" BeforeTargets="CoreCompile" Condition=" '$(Configuration)|$(Platform)'=='Upload|ULX3S ECP5-45K' ">
+		<Message Text="MyPostBuild running...$(Configuration)|$(Platform)" />
+		<Exec Command="echo after build" />
+	</Target>
+
+	<!-- Upload ULX3S ECP5-85K -->
+	<Target Name="Upload_ULX3S_85K" DependsOnTargets="Build_ULX3S_85K" AfterTargets="InitFPGA" BeforeTargets="SwitchToAnyCpu" Condition=" '$(Configuration)|$(Platform)|$(_AvoidTargetStep)'=='Upload|ULX3S ECP5-85K|' ">
+		<Message Text="Conditional Upload_ULX3S_85K running...$(Configuration)|$(Platform)" />
+		<CallTarget Targets="Build_ULX3S_85K"></CallTarget> <!-- see PropertyGroup Label="ULX3S" -->
+		<Error Text="$(BitstreamFilename) file not found!" Condition="!Exists('$(BitstreamFilename)')"></Error>
+		<Exec Command="c:\workspace-pr\fujprog\build\fujprog.exe -q5 $(BitstreamFilename) " YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high" >
 			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
 		</Exec>
 	</Target>
@@ -343,6 +382,7 @@
 	<!-- Verify ULX3S ECP5-85K -->
 	<Target Name="Verify_ULX3S_85K" AfterTargets="CoreCompile" Condition=" '$(Configuration)|$(Platform)'=='Verify|ULX3S ECP5-85K' ">
 		<Message Text="Conditional Upload_ULX3S_85K 212 running...$(Configuration)|$(Platform)" />
+		<CallTarget Targets="Release_ULX3S_85K"></CallTarget>
 		<Error Text="Verify Not implemented"></Error>
 		<Exec Command="$(FoundWSL) (echo not implemented )" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
 			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
@@ -495,7 +535,7 @@
 	</Target>
 
 	<!-- after the core compile, switch back to the seleted FPGA -->
-	<Target Name="SwitchToMyStartupPlatform" AfterTargets="xCoreCompile">
+	<Target Name="SwitchToMyStartupPlatform" AfterTargets="CoreCompile">
 		<Message Text="Running SwitchToMyStartupPlatform..." />
 		<PropertyGroup>
 			<Platform>$(MyStartupPlatform)</Platform>
@@ -523,16 +563,20 @@
 		<Error Text="WSL Not found!" Condition=" $(FoundWSL) == '' "></Error>
 	</Target>
 
-	<Target Name="VerifyToolchain" DependsOnTargets="VerifyWSL">
-		<Exec Command="$(FoundWSL) yosys --version" />
+	<Target Name="VerifyToolchain" DependsOnTargets="VerifyWSL" >
+		<Exec Command="$(FoundWSL) yosys --version"/>
 		<Exec Command="$(FoundWSL) nextpnr-ecp5 --version" />
-		
+		<Exec Command="$(FoundWSL) ecppack --version" />
+		<Exec Command="$(FoundWSL) /mnt/c/workspace/fujprog/build/fujprog.exe -V" />
+		 
+		<!-- ecppack does not yet have version feature see: https://github.com/YosysHQ/prjtrellis/pull/147 -->
 	</Target>
 
 	<Target Name="InitFPGA" DependsOnTargets="VerifyWSL;VerifyToolchain" BeforeTargets="CoreCompile">
+		<Error Text="BitstreamFilename cannot be blank" Condition=" '$(BitstreamFilename)'==''  "></Error>
 		<Message Text="Running InitFPGA ... '$(Configuration)|$(Platform)' " />
 		<Message Text="VCTargetsPath = $(VCTargetsPath)">  </Message>
-		<Message Text="Using WSL in = $(FoundWSL)" Condition=" $(FoundWSL) != '' "></Message>
+		<Message Text="Using WSL in = $(FoundWSL)" Condition=" '$(FoundWSL)' != '' "></Message>
 
 		<!-- Any generic, all-board, all build initialization will go here-->
 	</Target>
