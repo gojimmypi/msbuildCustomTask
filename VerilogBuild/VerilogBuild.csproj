@@ -14,7 +14,7 @@
 		<!-- If the programmer is in your path, just enter the name, otherwise provide fully qualified name  -->
 		<BitstreamProgrammer_ULX3S>c:\workspace-pr\fujprog\build\fujprog.exe</BitstreamProgrammer_ULX3S>
 		<BitstreamProgrammer_iCEBreaker></BitstreamProgrammer_iCEBreaker>
-		<BitstreamProgrammer_OrangeCrab></BitstreamProgrammer_OrangeCrab>
+		<BitstreamProgrammer_OrangeCrab>C:\workspace\dfu-util\bin-win64\dfu-util.exe</BitstreamProgrammer_OrangeCrab>
 		<BitstreamProgrammer_tinyFPGA></BitstreamProgrammer_tinyFPGA>
 	</PropertyGroup>
 
@@ -24,7 +24,7 @@
 			<_AvoidTargetStep>true</_AvoidTargetStep>
 		</PropertyGroup>
 	</Target>
-	
+
 	<ItemGroup>
 		<None Include="Properties\AssemblyInfo.cs" />
 	</ItemGroup>
@@ -34,11 +34,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Remove="ulx3s.bit" />
+		<None Remove="ulx3s.bit" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="boards\orangecrab\" />
+		<Folder Include="boards\orangecrab\" />
 	</ItemGroup>
 
 	<!-- 
@@ -46,7 +46,7 @@
     <Folder Include="Properties\" />
   </ItemGroup>  
   -->
-	
+
 
 	<PropertyGroup Condition="Exists('$(windir)\system32\wsl.exe')">
 		<FoundWSL>$(windir)\system32\wsl.exe</FoundWSL>
@@ -78,11 +78,11 @@
 	
 	Edit with caution! See makefile when changing BitstreamFilename
 	-->
-	
+
 	<PropertyGroup Condition=" '$(Platform)' == 'ULX3S ECP5-12K' ">
 		<PlatformTarget>ECP5-12K</PlatformTarget>
 		<BitstreamMakefile>boards/ulx3s/Makefile-ULX3S-12F.mk</BitstreamMakefile>
-		<BitstreamProgrammer>$(BitstreamProgrammer_ULX3S) -q25</BitstreamProgrammer> <!-- /mnt/c/workspace/fujprog/build/fujprog.exe -->
+		<BitstreamProgrammer>$(BitstreamProgrammer_ULX3S)</BitstreamProgrammer>
 		<BitstreamProgrammerType>ULX3S</BitstreamProgrammerType>
 		<BitstreamFilename>ulx3s.bit</BitstreamFilename>
 	</PropertyGroup>
@@ -90,7 +90,7 @@
 	<PropertyGroup Condition=" '$(Platform)' == 'ULX3S ECP5-25K' ">
 		<PlatformTarget>ECP5-25K</PlatformTarget>
 		<BitstreamMakefile>boards/ulx3s/Makefile-ULX3S-25F.mk</BitstreamMakefile>
-		<BitstreamProgrammer>$(BitstreamProgrammer_ULX3S) -q20</BitstreamProgrammer><!-- /mnt/c/workspace/fujprog/build/fujprog.exe -->
+		<BitstreamProgrammer>$(BitstreamProgrammer_ULX3S)</BitstreamProgrammer>
 		<BitstreamProgrammerType>ULX3S</BitstreamProgrammerType>
 		<BitstreamFilename>ulx3s.bit</BitstreamFilename>
 	</PropertyGroup>
@@ -98,17 +98,15 @@
 	<PropertyGroup Condition=" '$(Platform)' == 'ULX3S ECP5-45K' ">
 		<PlatformTarget>ECP5-45K</PlatformTarget>
 		<BitstreamMakefile>boards/ulx3s/Makefile-ULX3S-45F.mk</BitstreamMakefile>
-		<BitstreamProgrammer>$(BitstreamProgrammer_ULX3S) -q10</BitstreamProgrammer>
-		<!-- /mnt/c/workspace/fujprog/build/fujprog.exe -->
+		<BitstreamProgrammer>$(BitstreamProgrammer_ULX3S)</BitstreamProgrammer>
 		<BitstreamProgrammerType>ULX3S</BitstreamProgrammerType>
 		<BitstreamFilename>ulx3s.bit</BitstreamFilename>
 	</PropertyGroup>
-	
+
 	<PropertyGroup Condition=" '$(Platform)' == 'ULX3S ECP5-85K' ">
 		<PlatformTarget>ECP5-85K</PlatformTarget>
 		<BitstreamMakefile>boards/ulx3s/Makefile-ULX3S-85F.mk</BitstreamMakefile>
-		<BitstreamProgrammer>$(BitstreamProgrammer_ULX3S) -q5</BitstreamProgrammer>
-		<!-- /mnt/c/workspace/fujprog/build/fujprog.exe -->
+		<BitstreamProgrammer>$(BitstreamProgrammer_ULX3S)</BitstreamProgrammer>
 		<BitstreamProgrammerType>ULX3S</BitstreamProgrammerType>
 		<BitstreamFilename>ulx3s.bit</BitstreamFilename>
 	</PropertyGroup>
@@ -116,7 +114,7 @@
 	<!--
 	iCEBreaker
 	-->
-	<PropertyGroup Condition=" '$(Platform)' == 'iCEBreaker' "> 
+	<PropertyGroup Condition=" '$(Platform)' == 'iCEBreaker' ">
 		<PlatformTarget>iCE40</PlatformTarget>
 	</PropertyGroup>
 
@@ -125,10 +123,12 @@
 	-->
 	<PropertyGroup Condition=" '$(Platform)' == 'Orange Crab' ">
 		<PlatformTarget>ECP5-25F</PlatformTarget>
+		<BitstreamMakefile>boards/orangecrab/Makefile</BitstreamMakefile>
+		<BitstreamProgrammer>$(BitstreamProgrammer_OrangeCrab)</BitstreamProgrammer>
 		<BitstreamProgrammerType>OrangeCrab</BitstreamProgrammerType>
 		<BitstreamFilename>blink.dfu</BitstreamFilename>
 	</PropertyGroup>
-	
+
 
 	<!-- each $(Configuration)|$(Platform) pair needs its own PropertyGroup to appease Project - Poperties - Build - Output Path -->
 
@@ -240,7 +240,7 @@
   GlobalSection(ProjectConfigurationPlatforms) = postSolution
 
   for configuration manager items to be automatically renerated for the solution -->
-	
+
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release' ">
 		<OutputPath>bin\</OutputPath>
 		<MyPublishDirectory>bin\</MyPublishDirectory>
@@ -381,15 +381,16 @@
 			Build_ULX3S
 		</TargetsTriggeredByCompilation>
 	</PropertyGroup>
-	
+
 	<!--
 	Build ULX3S
 	
 	Note different chips are specified in the BitstreamMakefile property setting
 	-->
-	<Target Name="Build_ULX3S" DependsOnTargets="InitFPGA" AfterTargets="InitFPGA" BeforeTargets="SwitchToAnyCpu;Upload_ULX3S_85K">
+	<Target Name="Build_ULX3S" DependsOnTargets="InitFPGA" AfterTargets="InitFPGA" BeforeTargets="SwitchToAnyCpu;Upload_ULX3S_85K" Condition=" '$(Platform)' == 'ULX3S ECP5-12K' Or '$(Platform)' == 'ULX3S ECP5-25K' Or '$(Platform)' == 'ULX3S ECP5-45K' Or '$(Platform)' == 'ULX3S ECP5-85K' ">
+		<!-- check -->
 		<!-- see PropertyGroup Label="ULX3S" -->
-		<Message Text="Conditional Build_ULX3S 318 running...$(Configuration)|$(Platform)" />
+		<Message Text="Conditional Build_ULX3S running...$(Configuration)|$(Platform)" />
 		<Message Text="Using Makefile=$(BitstreamMakefile)" />
 		<Exec Command="$(FoundWSL) (make $(BitstreamFilename) -f $(BitstreamMakefile) )" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
 			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
@@ -418,7 +419,7 @@
 		<Message Text="Conditional Upload_ULX3S_12K running...$(Configuration)|$(Platform)" />
 		<CallTarget Targets="Build_ULX3S"></CallTarget>
 		<Error Text="$(BitstreamFilename) file not found!" Condition="!Exists('$(BitstreamFilename)')"></Error>
-		<Exec Command="$(BitstreamProgrammer) -q5 $(BitstreamFilename) " YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high" >
+		<Exec Command="$(BitstreamProgrammer) -q25 $(BitstreamFilename) " YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high" >
 			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
 		</Exec>
 	</Target>
@@ -453,7 +454,7 @@
 		<Message Text="Conditional Upload_ULX3S_25K running...$(Configuration)|$(Platform)" />
 		<CallTarget Targets="Build_ULX3S"></CallTarget>
 		<Error Text="$(BitstreamFilename) file not found!" Condition="!Exists('$(BitstreamFilename)')"></Error>
-		<Exec Command="$(BitstreamProgrammer) -q5 $(BitstreamFilename) " YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high" >
+		<Exec Command="$(BitstreamProgrammer) -q20 $(BitstreamFilename) " YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high" >
 			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
 		</Exec>
 	</Target>
@@ -488,7 +489,7 @@
 		<Message Text="Conditional Upload_ULX3S_45K running...$(Configuration)|$(Platform)" />
 		<CallTarget Targets="Build_ULX3S"></CallTarget>
 		<Error Text="$(BitstreamFilename) file not found!" Condition="!Exists('$(BitstreamFilename)')"></Error>
-		<Exec Command="$(BitstreamProgrammer) -q5 $(BitstreamFilename) " YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high" >
+		<Exec Command="$(BitstreamProgrammer) -q10 $(BitstreamFilename) " YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high" >
 			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
 		</Exec>
 	</Target>
@@ -521,7 +522,7 @@
 	<!-- Upload ULX3S ECP5-85K -->
 	<Target Name="Upload_ULX3S_85K" DependsOnTargets="Build_ULX3S" AfterTargets="InitFPGA" BeforeTargets="SwitchToAnyCpu" Condition=" '$(Configuration)|$(Platform)|$(_AvoidTargetStep)'=='Upload|ULX3S ECP5-85K|' ">
 		<Message Text="Conditional Upload_ULX3S_85K running...$(Configuration)|$(Platform)" />
-		<CallTarget Targets="Build_ULX3S"></CallTarget>  
+		<CallTarget Targets="Build_ULX3S"></CallTarget>
 		<Error Text="$(BitstreamFilename) file not found!" Condition="!Exists('$(BitstreamFilename)')"></Error>
 		<Exec Command="$(BitstreamProgrammer) -q5 $(BitstreamFilename) " YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high" >
 			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
@@ -548,21 +549,21 @@
 			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
 		</Exec>
 	</Target>
-	
+
 	<Target Name="LogStuffInRealTime" BeforeTargets="CoreCompile" Condition=" 1==2 ">
 		<Exec Command="ping 127.0.0.1 -n 6" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
 			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
 		</Exec>
 	</Target>
 
-	
-	
+
+
 
 	<!-- 
 	*******************************************************************************************************************************
 	iCEBeeaker
 	******************************************************************************************************************************* -->
-	
+
 	<!-- Debug iCEBreaker-->
 	<Target Name="Debug_iCEBreaker" Inputs="top_icebreaker.v" Outputs="top_icebreaker.bin" BeforeTargets="CoreCompile" Condition=" '$(Configuration)|$(Platform)'=='Debug|iCEBreaker' ">
 		<Message Text="Build_iCEBreaker $(Configuration)|$(Platform)" />
@@ -586,7 +587,7 @@
 			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
 		</Exec>
 	</Target>
-	
+
 	<!-- Verify iCEBreaker-->
 	<Target Name="Verify_iCEBreaker" Outputs="top_icebreaker.bin" AfterTargets="CoreBuild" DependsOnTargets="Build_iCEBreaker" Condition=" '$(Configuration)|$(Platform)'=='Verify|iCEBreaker' ">
 		<Message Text="Upload_iCEBreaker $(Configuration)|$(Platform)" />
@@ -597,7 +598,7 @@
 	</Target>
 
 
-	<!-- Clean iCEBreaker-->	
+	<!-- Clean iCEBreaker-->
 	<Target Name="Clean_iCEBreaker" AfterTargets="Clean" Condition=" '$(Platform)'=='iCEBreaker' ">
 		<Exec Command="$(FoundWSL) (make clean -f boards/icebreaker/main.mk )" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
 			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
@@ -609,32 +610,42 @@
 	Orange Crab
 	******************************************************************************************************************************* -->
 
-	<!-- Debug Orange_Crab-->
-	<Target Name="Debug_Orange_Crab" Inputs="top_Orange_Crab.v" Outputs="top_Orange_Crab.bin" BeforeTargets="CoreCompile" Condition=" '$(Configuration)|$(Platform)'=='Debug|Orange Crab' ">
-		<Message Text="Build_Orange_Crab $(Configuration)|$(Platform)" />
+	<!--  Build Orange Crab-->
+	<Target Name="Build_Orange_Crab" DependsOnTargets="InitFPGA" AfterTargets="InitFPGA" BeforeTargets="SwitchToAnyCpu;Upload_Orange_Crab" Condition=" '$(Platform)' == 'Orange Crab' ">
+		<!-- see PropertyGroup Label="ULX3S" -->
+		<Message Text="Conditional Build_Orange_Crab running...$(Configuration)|$(Platform)" />
+		<Message Text="Using Makefile=$(BitstreamMakefile)" />
 		<Exec Command="$(FoundWSL)  (cd boards/orangecrab/; make -f Makefile)" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
 			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
 		</Exec>
+		<PropertyGroup>
+			<SynthesisComplete>true</SynthesisComplete>
+		</PropertyGroup>
+	</Target>
+
+	<!-- Debug Orange_Crab-->
+	<Target Name="Debug_Orange_Crab" Inputs="top_Orange_Crab.v" Outputs="top_Orange_Crab.bin" BeforeTargets="CoreCompile" Condition=" '$(Configuration)|$(Platform)|$(_AvoidTargetStep)'=='Debug|Orange Crab|' ">
+		<Message Text="Build_Orange_Crab $(Configuration)|$(Platform)" />
+		<CallTarget Targets="Build_Orange_Crab"></CallTarget>
 	</Target>
 
 	<!-- Release Orange_Crab-->
-	<Target Name="Release_Orange_Crab" Inputs="top_Orange_Crab.v" Outputs="top_Orange_Crab.bin" BeforeTargets="CoreCompile" Condition=" '$(Configuration)|$(Platform)'=='Release|Orange Crab' ">
+	<Target Name="Release_Orange_Crab" Inputs="top_Orange_Crab.v" Outputs="top_Orange_Crab.bin" BeforeTargets="CoreCompile" Condition=" '$(Configuration)|$(Platform)|$(_AvoidTargetStep)'=='Release|Orange Crab|' ">
 		<Message Text="Build_Orange_Crab $(Configuration)|$(Platform)" />
-		<Exec Command="$(FoundWSL) (cd boards/orangecrab/; make -f boards/orangecrab/Makefile)" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
-			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
-		</Exec>
+		<CallTarget Targets="Build_Orange_Crab"></CallTarget>
 	</Target>
 
 	<!-- Upload Orange_Crab-->
-	<Target Name="Upload_Orange_Crab" Outputs="top_Orange_Crab.bin" AfterTargets="CoreBuild" DependsOnTargets="Build_Orange_Crab" Condition=" '$(Configuration)|$(Platform)'=='Upload|Orange Crab' ">
+	<Target Name="Upload_Orange_Crab" Outputs="top_Orange_Crab.bin" AfterTargets="CoreBuild"  BeforeTargets="CoreCompile"  Condition=" '$(Configuration)|$(Platform)|$(_AvoidTargetStep)'=='Upload|Orange Crab|' ">
 		<Message Text="Upload_Orange_Crab $(Configuration)|$(Platform)" />
-		<Exec Command="$(FoundWSL) (cd boards/orangecrab/; make prog -f boards/orangecrab/Makefile )" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
+		<CallTarget Targets="Build_Orange_Crab"></CallTarget>
+		<Exec Command="$(BitstreamProgrammer) -D boards\orangecrab\$(BitstreamFilename) " YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high" >
 			<Output TaskParameter="ConsoleOutput" ItemName="OutputOfExec" />
 		</Exec>
 	</Target>
 
 	<!-- Verify Orange_Crab-->
-	<Target Name="Verify_Orange_Crab" Outputs="top_Orange_Crab.bin" AfterTargets="CoreBuild" DependsOnTargets="Build_Orange_Crab" Condition=" '$(Configuration)|$(Platform)'=='Verify|Orange Crab' ">
+	<Target Name="Verify_Orange_Crab" Outputs="top_Orange_Crab.bin" AfterTargets="CoreBuild"  BeforeTargets="CoreCompile"  Condition=" '$(Configuration)|$(Platform)|$(_AvoidTargetStep)'=='Verify|Orange Crab|' ">
 		<Message Text="Upload_Orange_Crab $(Configuration)|$(Platform)" />
 		<Error Text="Verify Not implemented"></Error>
 		<Exec Command="$(FoundWSL) (echo not implemented )" YieldDuringToolExecution="True" ConsoleToMSBuild="true" StandardOutputImportance="high">
@@ -665,7 +676,7 @@
 	</Target>
 	-->
 
-	
+
 	<!-- For the main C# compile, we need to switch platform -->
 	<Target Name="SwitchToAnyCpu" BeforeTargets="CoreCompile">
 		<Message Text="Platform=$(Platform)" />
@@ -674,7 +685,7 @@
 			<!-- we'll first save the current values for later use -->
 			<MyStartupPlatform>$(Platform)</MyStartupPlatform>
 			<MyStartupPlatformTarget>$(PlatformTarget)</MyStartupPlatformTarget>
-			
+
 			<!-- now we'll switch to anycpu-->
 			<Platform>anycpu</Platform>
 			<PlatformTarget>anycpu</PlatformTarget>
@@ -716,7 +727,7 @@
 		<Exec Command="$(FoundWSL) yosys --version"/>
 		<Exec Command="$(FoundWSL) nextpnr-ecp5 --version" />
 		<Exec Command="$(FoundWSL) ecppack --version" />
-		<Exec Command="$(BitstreamProgrammer) -V" />
+		<Exec Command="$(BitstreamProgrammer) -V" Condition=" '$(Configuration)|$(BitstreamProgrammerType)' =='Upload|ULX3S' " />
 		<!-- ecppack does not yet have version feature see: https://github.com/YosysHQ/prjtrellis/pull/147 -->
 	</Target>
 
@@ -724,9 +735,11 @@
 		<Exec Command="$(BitstreamProgrammer) -q5 -V"  />
 		<Exec Command="echo wow > ProgrammerParameters.log"  />
 	</Target>
-	
+
 	<Target Name="InitFPGA" DependsOnTargets="VerifyWSL;VerifyToolchain" BeforeTargets="CoreCompile">
 		<Error Text="BitstreamFilename cannot be blank" Condition=" '$(BitstreamFilename)'==''      "></Error>
+		<Error Text="BitstreamMakefile cannot be blank" Condition=" '$(BitstreamMakefile)'==''      "></Error>
+
 		<Error Text="BitstreamMakefile not found"       Condition=" !Exists('$(BitstreamMakefile)') "></Error>
 
 		<Message Text="Running InitFPGA ... '$(Configuration)|$(Platform)' " />
